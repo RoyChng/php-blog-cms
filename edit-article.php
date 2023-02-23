@@ -2,6 +2,7 @@
 
 require "includes/database.php";
 require "includes/article.php";
+require "includes/url.php";
 
 $article = null;
 
@@ -16,7 +17,6 @@ if(isset($_GET["id"])){
         $title = $article["title"];
         $content = $article["content"];
         $published_at = $article["published_at"];
-        var_dump($published_at);
     } else {
         die("Invalid ID");
     }
@@ -26,15 +26,29 @@ if(isset($_GET["id"])){
 
 if($_SERVER["REQUEST_METHOD"] === "POST"){
     $conn = getDb();
-
+    
+    $id = $article["id"];
     $title = $_POST["title"];
     $content = $_POST["content"];
     $published_at = $_POST["published_at"];
-
     $errors = validateArticle($title, $content, $published_at);
 
     if(empty($errors)){
-        die("Form is valid");
+        if($published_at === ""){
+            $published_at = null;
+        }
+
+        $sql = "UPDATE article SET title = ?, content = ?, published_at = ? WHERE id = ?";
+        $stmt = mysqli_prepare($conn, $sql);
+        mysqli_stmt_bind_param($stmt, "sssi", $title, $content, $published_at, $id);
+        $successful = mysqli_stmt_execute($stmt);
+
+        if($successful){
+            redirect("article.php?id=$id");
+        } else{
+            echo "Error editing article";
+            echo mysqli_stmt_error($stmt);
+        }
     }
 }
 ?>

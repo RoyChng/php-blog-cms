@@ -28,18 +28,7 @@ if($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])){
         $successful = mysqli_stmt_execute($stmt);
 
         if($successful){
-            $id = mysqli_insert_id($conn);
-            $server_name = $_SERVER["SERVER_NAME"];
-
-            if(isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] !== "off"){
-                $protocol = "https";
-            } else{
-                $protocol = "http";
-            }
-
-            header("Location: $protocol://$server_name/article.php?id=$id");
-            // header("Location: article.php?id=$id");
-            exit();
+            redirect("article.php?id=$id")
         } else{
             echo "Error creating article";
             echo mysqli_stmt_error($stmt);

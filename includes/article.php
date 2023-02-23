@@ -42,7 +42,7 @@ function validateArticle($title, $content, $published_at){
 
     if($published_at !== ""){
         $date_time = date_create_from_format("Y-m-d\TH:i", $published_at);
-
+        
         if($date_time === false){
             $errors[] = "Invalid date!";
         } else{
